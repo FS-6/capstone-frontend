@@ -1,7 +1,9 @@
 function App() {
   return (
     <>
-      <h1 className="text-3xl font-bold underline">alfian pernah disini</h1>
+      <h1 className="text-3xl font-bold underline">
+        Welcome to FS-6 Front End
+      </h1>
     </>
   );
 }
