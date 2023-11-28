@@ -70,6 +70,11 @@ export const editUser = (data) => {
     try {
       const response = await axios.put(
         "https://lazy-shorts-fish.cyclic.app/user/edit",
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+        },
         data
       );
       dispatch(successFetch(response));

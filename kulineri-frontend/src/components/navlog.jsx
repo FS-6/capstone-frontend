@@ -1,7 +1,26 @@
+import { useEffect } from "react";
 import { HiSearch, HiOutlineShoppingCart, HiOutlineMenu } from "react-icons/hi";
-import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { getUser } from "../redux/reducer/user";
 
 const Navlog = () => {
+  const {
+    user: userData,
+    isLoading,
+    isError,
+  } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    dispatch(getUser());
+  }, [dispatch]);
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("token");
+    navigate("/login");
+  };
   return (
     <>
       <header className="w-full bg-zinc-50 py-5 fixed top-0">
@@ -25,22 +44,23 @@ const Navlog = () => {
             <Link to="/cart" className="text-red-600 text-xl">
               <HiOutlineShoppingCart size={30} />
             </Link>
-            <button>
-              <div className="text-xl gap-8 dropdown dropdown-hover dropdown-end mt-1 ">
-                <HiOutlineMenu size={30} />
-                <ul
-                  tabIndex={0}
-                  className="dropdown-content z-[1] menu p-2 rounded-box w-52 h-full"
-                >
-                  <li>
-                    <Link to="/profilesettings">Profile Settings</Link>
-                  </li>
-                  <li>
-                    <Link to="/">Logout</Link>
-                  </li>
-                </ul>
-              </div>
-            </button>
+            <details className="dropdown dropdown-end ">
+              <summary className=" btn rounded-full">
+                <div class="flex  gap-2 border-1">
+                  <p>{userData?.data?.name || "Guest"}</p>
+                </div>
+              </summary>
+              <ul className="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-24 md:w-52">
+                <li>
+                  <Link to="/profilesettings">Profile Settings</Link>
+                </li>
+                <li>
+                  <button onClick={handleLogout}>
+                    <a>Logout</a>
+                  </button>
+                </li>
+              </ul>
+            </details>
           </div>
         </nav>
       </header>
