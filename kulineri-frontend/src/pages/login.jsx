@@ -1,41 +1,28 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 
 const Login = () => {
-  const URL = "https://victorious-fawn-moccasins.cyclic.app/user/login";
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [values, setValues] = useState({
+    email: "",
+    password: "",
+  });
+
   const navigate = useNavigate();
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
-
-    const userCredentials = {
-      email: email,
-      password: password,
-    };
-
-    try {
-      const response = await fetch(URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(userCredentials),
+    axios
+      .post("https://lazy-shorts-fish.cyclic.app/user/login", values)
+      .then((res) => {
+        sessionStorage.setItem("token", res.data.token);
+        let token = sessionStorage.getItem("token");
+        if (token) {
+          navigate("/home");
+          console.log(res);
+        }
       });
-
-      if (response.ok) {
-        alert("Login berhasil");
-        navigate("/home");
-      } else {
-        alert("Login gagal. Periksa kembali email dan password.");
-      }
-    } catch (error) {
-      console.error("Error during login:", error);
-      alert("Terjadi kesalahan saat login. Silakan coba lagi nanti.");
-    }
   };
-
   return (
     <div className="w-full min-h-screen">
       <div className="max-w-xl mx-auto px-10">
@@ -48,11 +35,7 @@ const Login = () => {
             alt="Logo"
           />
         </div>
-        <form
-          className="form-login border rounded-xl p-10"
-          method="post"
-          onSubmit={handleSubmit}
-        >
+        <form className="form-login border rounded-xl p-10">
           <h1 className="text-2xl font-bold mb-6 text-center">Masuk</h1>
 
           <div className="mb-3">
@@ -62,13 +45,10 @@ const Login = () => {
           </div>
           <div className="mb-3">
             <input
+              className="w-full p-2"
               type="email"
-              className="form-control border w-full rounded h-8"
-              id="email"
-              placeholder=""
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
+              placeholder="Email"
+              onChange={(e) => setValues({ ...values, email: e.target.value })}
             />
           </div>
           <div className="mb-3">
@@ -78,13 +58,12 @@ const Login = () => {
           </div>
           <div className="mb-5">
             <input
+              className="w-full p-2"
               type="password"
-              className="form-control border w-full rounded h-8"
-              id="password"
-              placeholder=""
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
+              placeholder="Password"
+              onChange={(e) =>
+                setValues({ ...values, password: e.target.value })
+              }
             />
           </div>
 
@@ -94,13 +73,13 @@ const Login = () => {
 
           <button
             className="bg-red-700 rounded py-3 my-5 text-white w-full text-lg font-semibold"
-            type="submit"
+            onClick={handleSubmit}
           >
-            Masuk
+            Login
           </button>
 
           <p className="text-center">
-            Belum punya akun?{" "}
+            Belum punya akun?
             <Link to="/register" className="text-sky-500 hover:underline">
               Daftar
             </Link>
@@ -110,5 +89,4 @@ const Login = () => {
     </div>
   );
 };
-
 export default Login;

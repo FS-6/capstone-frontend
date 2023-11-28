@@ -1,42 +1,32 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
 
 const Register = () => {
-  const URL = "https://victorious-fawn-moccasins.cyclic.app/user/register";
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [addresses, setAddresses] = useState("");
+  const [values, setValues] = useState({
+    name: "",
+    email: "",
+    password: "",
+    address: "",
+  });
+  const [passwordError, setPasswordError] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
 
-    try {
-      if (password !== confirmPassword) {
-        alert("Password and Confirm Password do not match.");
-        return;
-      }
-
-      const response = await fetch(URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name, email, password, addresses }),
-      });
-
-      if (response.ok) {
-        alert("Pendaftaran berhasil. Anda dapat login sekarang.");
-        navigate("/login");
-      } else {
-        alert("Pendaftaran gagal. Coba lagi.");
-      }
-    } catch (error) {
-      console.error("Terjadi kesalahan:", error);
-      alert("Terjadi kesalahan saat mendaftar. Coba lagi nanti.");
+    if (values.password !== values.confirmPassword) {
+      setPasswordError("Password dan Confirm Password harus sama");
+      return;
     }
+
+    setPasswordError("");
+    axios
+      .post("https://lazy-shorts-fish.cyclic.app/user/register", values)
+      .then((res) => {
+        navigate("/login");
+        console.log(res);
+      });
   };
 
   return (
@@ -51,11 +41,7 @@ const Register = () => {
             alt="Logo"
           />
         </div>
-        <form
-          className="form-register border rounded-xl p-10"
-          method="post"
-          onSubmit={handleSubmit}
-        >
+        <form className="form-register border rounded-xl p-10">
           <h1 className="text-2xl font-bold mb-6 text-center">Daftar</h1>
 
           <div className="mb-3">
@@ -65,13 +51,10 @@ const Register = () => {
           </div>
           <div className="mb-3">
             <input
-              type="name"
               className="form-control border w-full rounded h-8"
-              id="name"
-              placeholder=""
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              type="name"
+              placeholder="Name"
+              onChange={(e) => setValues({ ...values, name: e.target.value })}
             />
           </div>
 
@@ -82,13 +65,10 @@ const Register = () => {
           </div>
           <div className="mb-3">
             <input
-              type="email"
               className="form-control border w-full rounded h-8"
-              id="email"
-              placeholder=""
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="email"
+              placeholder="Email"
+              onChange={(e) => setValues({ ...values, email: e.target.value })}
             />
           </div>
           <div className="mb-3">
@@ -98,13 +78,12 @@ const Register = () => {
           </div>
           <div className="mb-3">
             <input
-              type="password"
               className="form-control border w-full rounded h-8"
-              id="password"
-              placeholder=""
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              type="password"
+              placeholder="Password"
+              onChange={(e) =>
+                setValues({ ...values, password: e.target.value })
+              }
             />
           </div>
           <div className="mb-3">
@@ -119,10 +98,16 @@ const Register = () => {
               id="confirmpassword"
               placeholder=""
               required
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={(e) =>
+                setValues({ ...values, confirmPassword: e.target.value })
+              }
             />
           </div>
+
+          {passwordError && (
+            <div className="text-red-500 mb-3">{passwordError}</div>
+          )}
+
           <div className="mb-3">
             <label htmlFor="addresses" className="form-label">
               Alamat
@@ -130,26 +115,24 @@ const Register = () => {
           </div>
           <div className="mb-5">
             <input
-              type="addresses"
               className="form-control border w-full rounded h-8"
-              id="addresses"
-              placeholder=""
-              required
-              value={addresses}
-              onChange={(e) => setAddresses(e.target.value)}
+              type="addresses"
+              placeholder="Adresses"
+              onChange={(e) =>
+                setValues({ ...values, address: e.target.value })
+              }
             />
           </div>
 
           <button
             className="bg-red-700 rounded py-3 my-5 text-white w-full text-lg font-semibold"
-            id="btnSubmit"
-            type="submit"
+            onClick={handleSubmit}
           >
             Daftar
           </button>
 
           <p className="text-center">
-            Belum punya akun?{" "}
+            Belum punya akun?
             <Link to="/login" className="text-sky-500 hover:underline">
               Login
             </Link>
