@@ -5,6 +5,9 @@ import Navbar from './components/Nav/NavBar';
 const Home = lazy(() => import('./components/Home/Home'));
 const Products = lazy(() => import('./components/Products/Products'));
 const DetailProduct = lazy(() => import('./components/DetailProduct/DetailProduct'));
+const Cart = lazy(() => import('./components/Cart/Cart'));
+const Checkout = lazy(() => import('./components/Checkout/Checkout'));
+const DetailPesanan = lazy(() => import('./components/DetailPesanan/DetailPesanan'));
 
 const App = () => (
   <Router>
@@ -14,6 +17,9 @@ const App = () => (
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<Products />} />
         <Route path="/products/detailproduct/:id" element={<DetailProduct />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/detailpesanan" element={<DetailPesanan />} />
       </Routes>
     </Suspense>
   </Router>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const products = [
   {
@@ -50,7 +51,9 @@ const DetailProduct = () => {
     id: 1,
     nama: "Original",
     price: 0,
-  });  
+  });
+
+  const subTotal = counterJumlah * (product.price + varianProduk.price);
 
   const varian = [
     {
@@ -79,12 +82,12 @@ const DetailProduct = () => {
   }
 
   return (
-    <div className="container detail-produk mt-2">
-      <h3 className="detail-produk1">Detail Produk</h3>
-      <div className="grid grid-cols-3 gap-4">
+    <div className="flex flex-wrap justify-between px-20 py-10">
+      <h3 className="text-2xl font-bold pb-3">Detail Produk</h3>
+      <div className="grid grid-cols-3 gap-5">
         <React.Fragment key={product.id}>
           <div className="mt-2">
-            <div className="rectangle-parent">
+            <div className="mr-5">
               <img
                 className="w-full"
                 alt={`img${id}.png`}
@@ -92,77 +95,110 @@ const DetailProduct = () => {
               />
             </div>
           </div>
+
           <div>
-            <div className="group-parent">
-              <div className="pie-susu-bali-isi-20-pcs-parent">
-                <div className="pie-susu-bali">
+            <div className="mr-5">
+              <div className="">
+                <div className="">
                   <strong>
                     <span className="text-2xl font-bold">{product.name}</span>
                   </strong>
                 </div>
-                <p className="text-gray-700">{product.city}</p>
-                <p className="text-gray-700">{product.rating}</p>
-                <p className="text-gray-600 mb-2">Rp {product.price}</p>
-                <hr></hr>
-                <p>Pilih varian :</p>
+                <p className="text-gray-700 mt-2 mb-1">{product.city}</p>
+                <div className="flex mb-1">
+                  <span className="text-md text-amber-300 mr-1">&#9733;</span>
+                  <p className="text-gray-700">{product.rating}</p>
+                </div>
+
+                <p className="text-black mb-1 font-bold text-xl">
+                  Rp. {product.price}
+                </p>
+                <hr className="my-2"></hr>
+                <p className="mb-1 font-semibold">Pilih varian :</p>
                 <div>
                   {varian.map((data) => (
                     <button
                       key={data.id}
                       onClick={() => handleVarian(data)}
-                      className={`ml-2 p-2 border border-black ${
+                      className={`w-24 mb-2 mr-2 p-2 border border-black rounded-md bg-white ${
                         varianProduk.id === data.id
                           ? "bg-gray-500"
                           : "bg-gray-800"
                       }`}
+                      style={{
+                        backgroundColor:
+                          varianProduk.id === data.id ? "black" : "white",
+                        color: varianProduk.id === data.id ? "white" : "black",
+                      }}
                     >
                       {data.nama}
                     </button>
                   ))}
                 </div>
-                <p>Jumlah stok : {product.stok}</p>
-                <p>Jumlah pesanan :</p>
-                <div className="flex">
-                  {counterJumlah === 1 ? (
-                    <button disabled>-</button>
-                  ) : (
-                    <button onClick={() => setCounterJumlah(counterJumlah - 1)}>
-                      -
-                    </button>
-                  )}
-                  {counterJumlah}
-                  <button onClick={() => setCounterJumlah(counterJumlah + 1)}>
-                    +
-                  </button>
+
+                <div className="flex justify-between mb-1">
+                  <p className="font-semibold">Jumlah stok :</p>
+                  <p>{product.stok}</p>
                 </div>
-                <hr></hr>
-                <h4>Kategori</h4>
-                <p>- Makanan manis</p>
-                <h4>Deskripsi Produk</h4>
+
+                <div className="flex justify-between mb-1">
+                  <p className="font-semibold">Jumlah pesanan :</p>
+                  <div>
+                    {counterJumlah === 1 ? (
+                      <button
+                        className="border px-2 rounded-full mx-2 text-gray-300"
+                        disabled
+                      >
+                        -
+                      </button>
+                    ) : (
+                      <button
+                        className="border px-2 rounded-full mx-2"
+                        onClick={() => setCounterJumlah(counterJumlah - 1)}
+                      >
+                        -
+                      </button>
+                    )}
+                    {counterJumlah}
+                    <button
+                      className="border px-2 rounded-full ml-2"
+                      onClick={() => setCounterJumlah(counterJumlah + 1)}
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+                <hr className="my-2"></hr>
+                <h4 className="font-semibold">Kategori</h4>
+                <p className="ml-3 mb-2">- Makanan manis</p>
+                <h4 className="font-semibold">Deskripsi Produk</h4>
                 <p className="text-muted">
                   <small>{product.description}</small>
                 </p>
-                <hr></hr>
+                <hr className="my-2"></hr>
               </div>
             </div>
           </div>
         </React.Fragment>
         <div className="mt-2">
           <div className="card">
-            <div className="card-body">
-              <strong>
-                <p>Ringkasan Belanja</p>
-              </strong>
-              <div className="flex">
-                <p>Subtotal: </p>
-                {counterJumlah * (product.price + varianProduk.price)}
+            <div className="card-body p-5 border rounded-md">
+              <p className="text-xl mb-4 font-bold">Ringkasan Belanja</p>
+
+              <div className="flex justify-between mb-2">
+                <p>Subtotal</p>
+                <p>Rp. {subTotal}</p>
               </div>
-              <p>Total Diskon</p>
+
               <hr></hr>
               <strong>
-                <p>Rp. {counterJumlah * product.price}</p>
+                <p className="text-lg my-3 text-right">Rp. {subTotal}</p>
               </strong>
-              <button>+ Keranjang</button>
+              <Link to={`/cart`}>
+                <button className="border p-2 w-full rounded-md font-semibold">
+                  + Keranjang
+                </button>
+              </Link>
             </div>
           </div>
         </div>

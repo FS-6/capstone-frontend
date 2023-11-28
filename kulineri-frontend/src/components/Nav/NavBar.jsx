@@ -13,6 +13,15 @@ const Navbar = () => {
           <li>
             <Link to="/products" className="text-white hover:text-gray-300">Products</Link>
           </li>
+          <li>
+            <Link to="/cart" className="text-white hover:text-gray-300">Cart</Link>
+          </li>
+          <li>
+            <Link to="/checkout" className="text-white hover:text-gray-300">Checkout</Link>
+          </li>
+          <li>
+            <Link to="/detailpesanan" className="text-white hover:text-gray-300">Detail Pesanan</Link>
+          </li>
         </ul>
       </div>
     </nav>
