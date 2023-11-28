@@ -13,7 +13,7 @@ const Dashboard = () => {
 
   const getProducts = async () => {
     const { data } = await axios.get(
-      `https://victorious-fawn-moccasins.cyclic.app/products`
+      `https://lazy-shorts-fish.cyclic.app/products`
     );
     setProducts(data.data);
   };
