@@ -6,10 +6,10 @@ import Register from "./pages/register";
 import Home from "./pages/home";
 import Settings from "./pages/profilesettings";
 import Error from "./pages/404";
-import DetailProduct from "./pages/DetailProduct/DetailProduct";
-import Cart from "./pages/Cart/Cart";
-import Checkout from "./pages/Checkout/Checkout";
-import DetailPesanan from "./pages/DetailPesanan/DetailPesanan";
+import DetailProduct from "./pages/DetailProduct";
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import DetailPesanan from "./pages/DetailPesanan";
 
 function App() {
   return (
@@ -17,9 +17,9 @@ function App() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<Login />} />
       <Route path="register" element={<Register />} />
-      <Route path="home" element={<Home />} />
+      <Route path="/home" element={<Home />} />
       <Route path="profilesettings" element={<Settings />} />
-      <Route path="/products/productdetail/:id" element={<DetailProduct />} />
+      <Route path="/productdetail/:id" element={<DetailProduct />} />
       <Route path="/cart" element={<Cart />} />
       <Route path="/checkout" element={<Checkout />} />
       <Route path="/detailpesanan" element={<DetailPesanan />} />

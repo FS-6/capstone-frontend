@@ -1,23 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import { FaStar, FaCartPlus } from "react-icons/fa";
 import Footer from "../components/footer";
 import Navlog from "../components/navlog";
+import { getProducts } from "../../services/product.service";
 
 const Home = () => {
   const [products, setProducts] = useState([]);
+
   useEffect(() => {
-    getProducts();
+    const wrapper = setTimeout(() => {
+      getProducts().then((data) => {
+        setProducts(data.data);
+      });
+    }, 0);
+    return () => clearTimeout(wrapper);
   }, []);
 
-  const getProducts = async () => {
-    const { data } = await axios.get(
-      `https://lazy-shorts-fish.cyclic.app/products`
-    );
-    setProducts(data.data);
-  };
-  console.log(products);
   function formatCurrency(number) {
     return new Intl.NumberFormat("id-ID", {
       style: "currency",
