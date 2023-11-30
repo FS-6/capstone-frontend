@@ -4,20 +4,20 @@ import axios from "axios";
 import { FaStar, FaCartPlus } from "react-icons/fa";
 import Footer from "../components/footer";
 import Navbar from "../components/navbar";
+import { getProducts } from "../../services/product.service";
 
 const Dashboard = () => {
   const [products, setProducts] = useState([]);
+
   useEffect(() => {
-    getProducts();
+    const wrapper = setTimeout(() => {
+      getProducts().then((data) => {
+        setProducts(data.data);
+      });
+    }, 0);
+    return () => clearTimeout(wrapper);
   }, []);
 
-  const getProducts = async () => {
-    const { data } = await axios.get(
-      `https://lazy-shorts-fish.cyclic.app/products`
-    );
-    setProducts(data.data);
-  };
-  console.log(products);
   function formatCurrency(number) {
     return new Intl.NumberFormat("id-ID", {
       style: "currency",

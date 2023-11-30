@@ -16,7 +16,7 @@ const Cart = () => {
             id="pilihproduk"
           />
           Pilih semua
-          <hr className="my-4"></hr>
+          <hr className="my-4" />
           <div>
             <div className="flex">
               <input
@@ -79,7 +79,9 @@ const Cart = () => {
             type="text"
             placeholder="Masukkan Kode Kupon"
           />
-          <button className="border p-2 rounded-md font-semibold text-white bg-black">Pakai</button>
+          <button className="border p-2 rounded-md font-semibold text-white bg-black">
+            Pakai
+          </button>
         </div>
 
         <p className="text-xl mb-4 font-bold">Ringkasan Belanja</p>
