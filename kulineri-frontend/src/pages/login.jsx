@@ -1,92 +1,121 @@
-import { useState } from "react";
-import axios from "axios";
-import { useNavigate, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { doLogin, clearMessage } from "../redux/reducer/auth";
+import Loading from "../components/Animation/Loading";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const Login = () => {
-  const [values, setValues] = useState({
+export default function Login() {
+  const { isLogin, isLoading, message } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [value, setValue] = useState({
     email: "",
     password: "",
   });
 
-  const navigate = useNavigate();
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setValue((prevValue) => ({
+      ...prevValue,
+      [name]: value,
+    }));
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    axios
-      .post("https://lazy-shorts-fish.cyclic.app/user/login", values)
-      .then((res) => {
-        sessionStorage.setItem("token", res.data.token);
-        let token = sessionStorage.getItem("token");
-        if (token) {
-          navigate("/home");
-          console.log(res);
-        }
-      });
+    dispatch(doLogin(value));
   };
+
+  useEffect(() => {
+    if (isLogin === true) {
+      toast.success("Login Sukses", {
+        position: "top-center",
+        autoClose: 500,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        closeButton: false,
+        draggable: true,
+        theme: "colored",
+      });
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 2000);
+    }
+
+    return () => {
+      dispatch(clearMessage());
+    };
+  }, [isLogin, navigate, dispatch]);
+
   return (
-    <div className="w-full min-h-screen">
-      <div className="max-w-xl mx-auto px-10">
-        <div className="flex justify-center">
-          <img
-            className="mt-20 mb-10"
-            src="logo/kulineri-logo.png"
-            width="150"
-            height=""
-            alt="Logo"
-          />
+    <div className="w-full max-w-7xl min-h-screen flex justify-center md:justify-center mx-auto px-6 md:px-0">
+      <div className="hidden md:block w-full p-8">
+        <div className="w-full h-full bg-red-700 rounded-md flex justify-center items-center">
+          <img src="/figure/shope.png" className="w-[70%]" alt="" />
         </div>
-        <form className="form-login border rounded-xl p-10">
-          <h1 className="text-2xl font-bold mb-6 text-center">Masuk</h1>
-
-          <div className="mb-3">
-            <label htmlFor="email" className="form-label">
-              Email
+      </div>
+      <div className="w-full flex flex-col justify-center items-center">
+        <h1 className="text-4xl font-bold mb-3">Login</h1>
+        <p className="text-sm">Yuk login dulu sebelum N'jajan 😋</p>
+        <form
+          onSubmit={handleSubmit}
+          method="post"
+          className="my-8 w-full md:w-3/4"
+        >
+          <div className="mb-4 flex flex-col">
+            <label htmlFor="email" className="text-sm mb-2">
+              email
             </label>
-          </div>
-          <div className="mb-3">
             <input
-              className="w-full p-2"
               type="email"
-              placeholder="Email"
-              onChange={(e) => setValues({ ...values, email: e.target.value })}
+              name="email"
+              placeholder="jack@gmail.com"
+              className="w-full p-2 border rounded-md"
+              onChange={handleChange}
+              autoComplete="off"
+              required
             />
           </div>
-          <div className="mb-3">
-            <label htmlFor="password" className="form-label">
-              Password
+          <div className="mb-4 flex flex-col">
+            <label htmlFor="password" className="text-sm mb-2">
+              password
             </label>
-          </div>
-          <div className="mb-5">
             <input
-              className="w-full p-2"
               type="password"
-              placeholder="Password"
-              onChange={(e) =>
-                setValues({ ...values, password: e.target.value })
-              }
+              name="password"
+              placeholder="***"
+              className="w-full p-2 border rounded-md"
+              onChange={handleChange}
+              autoComplete="off"
+              required
             />
           </div>
-
-          <a href="#">
-            <p className="text-sky-500 hover:underline">Lupa password?</p>
-          </a>
-
+          <div className="text-sm text-red-700 mb-4">
+            {isLogin === true ? "" : message.message}
+          </div>
           <button
-            className="bg-red-700 rounded py-3 my-5 text-white w-full text-lg font-semibold"
-            onClick={handleSubmit}
+            type="submit"
+            className="w-full p-2 bg-red-700 text-white rounded-md"
           >
-            Login
+            {isLoading ? <Loading /> : "login"}
           </button>
-
-          <p className="text-center">
-            Belum punya akun?
-            <Link to="/register" className="text-sky-500 hover:underline">
+        </form>
+        <div className="text-sm">
+          <span>
+            Belum punya akun ?{" "}
+            <Link
+              to="/register"
+              rel="noopener noreferrer"
+              className="text-red-700"
+            >
               Daftar
             </Link>
-          </p>
-        </form>
+          </span>
+        </div>
       </div>
     </div>
   );
-};
-export default Login;
+}

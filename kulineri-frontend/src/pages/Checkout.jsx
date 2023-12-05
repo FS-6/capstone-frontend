@@ -1,154 +1,207 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { getCartById } from "../redux/reducer/cart";
+import { formatCurrency, getCartId } from "../utils/helper";
+import { useDispatch, useSelector } from "react-redux";
+import { getUser } from "../redux/reducer/user";
+import { getProductById } from "../redux/reducer/product";
+import {
+  createTransaction,
+  getTransactionById,
+} from "../redux/reducer/transaction";
+import { createOrder, getOrderById } from "../redux/reducer/order";
+import { useNavigate } from "react-router-dom";
 
-const Checkout = () => {
+export default function Checkout() {
+  const { id } = getCartId();
+  const { carts } = useSelector((state) => state.cart);
+  const { user } = useSelector((state) => state.user);
+  const { products } = useSelector((state) => state.product);
+  const { transactions } = useSelector((state) => state.transaction);
+  const { orders } = useSelector((state) => state.order);
+  const [pengiriman, setPengiriman] = useState("");
+  const [pembayaran, setPembayaran] = useState("");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const form = {
+    cart: id,
+    shipping: pengiriman,
+    payment: pembayaran,
+  };
+
+  useEffect(() => {
+    dispatch(getCartById(id));
+  }, [id]);
+
+  useEffect(() => {
+    dispatch(getProductById(carts.product));
+  }, [carts.product]);
+
+  useEffect(() => {
+    dispatch(getTransactionById(transactions._id));
+  }, [transactions._id]);
+
+  useEffect(() => {
+    dispatch(getOrderById(orders._id));
+  }, [orders._id]);
+
+  useEffect(() => {
+    dispatch(getUser());
+  }, [dispatch]);
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    dispatch(createTransaction(form));
+  };
+
+  const handleCreateOrder = () => {
+    dispatch(createOrder({ transactionId: transactions._id }));
+  };
+
+  useEffect(() => {
+    if (orders._id) {
+      navigate(`/order?detail=${orders._id}`);
+    }
+  }, [orders, navigate]);
+
+  const handleCancleOrder = () => {
+    window.location.href = "/cart";
+  };
+
   return (
-    <div className="flex flex-col md:flex-row md:flex-wrap justify-between px-5 md:px-20 py-5 md:py-10 mx-auto">
-      <h3 className="pb-3 font-bold text-lg md:text-xl lg:text-2xl">
-        Checkout
-      </h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:p-3 gap-5 lg:gap-7">
-        <div className="">
-          <h1 className="mb-3 font-semibold text-sm md:text-lg lg:text-xl">
-            Alamat Pengiriman
-          </h1>
-          <div>
-            <div className="flex border p-3 lg:p-5 rounded-md mb-5">
-              <div>
-                <h1 className="font-bold text-xs md:text-sm lg:text-base">
-                  Mr. Joko
-                </h1>
-                <p className="text-xs md:text-sm lg:text-base">0812019919190</p>
-                <p className="text-xs md:text-sm lg:text-base">
-                  Jalan Bunga Mawar No.111 RT00/RW00 Kel. Jatimerak, Kec. Pondok
-                  Terong, Kota Jakarta Barat, DKI Jakarta 11119
-                </p>
-              </div>
-              <div className="flex ml-5 items-center">
-                <button className="border rounded-md py-1 px-2 md:py-2 md:px-3 lg:py-3 lg:px-5 font-semibold text-xs md:text-sm lg:text-base text-center">
-                  Ubah
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <h1 className="mb-3 font-semibold text-sm md:text-lg lg:text-xl">
-                Produk yang Dibeli
-              </h1>
-              <hr className="my-3 border lg:border-2" />
-              <div className="flex my-3 justify-between">
-                <div className="flex">
-                  <img
-                    className="mx-3"
-                    src="../../src/assets/product/img1.png"
-                    alt=""
-                  />
-                  <div>
-                    <p className="text-xs md:text-sm lg:text-base">
-                      Pie Susu Bali (isi 20 pcs)
-                    </p>
-                    <p className="text-xs md:text-sm lg:text-base">Original</p>
-                    <p className="font-semibold text-xs md:text-sm lg:text-base">
-                      Rp 55.000
-                    </p>
-                  </div>
-                </div>
-
-                <div className="text-right text-xs md:text-sm lg:text-base">
-                  <p>2x</p>
-                </div>
-              </div>
-              <hr className="my-2" />
-
-              <div className="flex justify-between">
-                <div>
-                  <h1 className="font-semibold text-sm md:text-lg lg:text-xl">
-                    Subtotal
-                  </h1>
-                </div>
-                <div>
-                  <h1 className="font-bold text-sm md:text-lg lg:text-xl">
-                    Rp 100000
-                  </h1>
+    <section className="max-w-6xl mx-auto px-5 mt-10 mb-10 flex flex-wrap gap-8">
+      <div className="w-full md:w-[60%]">
+        <div className="bg-green-100 p-5 border rounded-md mb-8">
+          <span className="text-sm">
+            Ini halaman terakhir dari proses belanjamu. Pastikan semua sudah
+            benar, ya ✨
+          </span>
+        </div>
+        <div className="mb-8">
+          <div key={carts._id}>
+            <h1 className="text-lg font-semibold mb-3">Produk di Beli</h1>
+            <div className="flex gap-5 p-2 border rounded-md bg-zinc-50 shadow-sm">
+              <img
+                src={products.image}
+                alt="product-img"
+                className="w-[150px] rounded-md"
+                id="product-image"
+              />
+              <div className="w-full">
+                <h3 className="font-medium text-lg mb-[2px]" id="product-name">
+                  {products.name}
+                </h3>
+                <h5 className="mb-4 text-sm"></h5>
+                <div className="flex justify-between">
+                  <p id="product-price">{carts.quantity}</p>
+                  <span className="font-semibold" id="total-price">
+                    {formatCurrency(carts.totalPrice)}
+                  </span>
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-        <div className="mt-2 max-w-md">
-          <div className="border p-3 rounded">
-            <p className="mb-3 font-semibold text-sm md:text-lg lg:text-xl">
-              Pilih jenis pengiriman
-            </p>
-            <select
-              className="border w-full rounded-md p-2 text-xs md:text-sm lg:text-base"
-              name="pengiriman"
-            >
-              <option className="text-xs md:text-sm lg:text-base" value="COD">
-                COD
-              </option>
-              <option
-                className="text-xs md:text-sm lg:text-base"
-                value="Instant"
+        <div>
+          <h1 className="text-lg font-semibold mb-3">
+            Pengiriman dan Pembayaran
+          </h1>
+          <form onSubmit={handleSubmit} method="post">
+            <div className="mb-4 bg-zinc-50 p-4 border rounded-sm">
+              <h1 className="font-sm mb-2">
+                <span className="bg-zinc-200 p-1 rounded-sm text-xs font-semibold mr-2">
+                  Utama
+                </span>
+                {user.name} -
+                <span className="font-medium"> Kota {user.address}</span>
+              </h1>
+            </div>
+            <div className="mb-6 flex flex-col">
+              <label htmlFor="pengiriman" className="font-semibold pb-3">
+                Pilih Pengiriman
+              </label>
+              <select
+                name="pengiriman"
+                id="opsi-pengiriman"
+                className="w-full p-2 border rounded-md"
+                value={pengiriman}
+                onChange={(e) => setPengiriman(e.target.value)}
               >
-                Instant
-              </option>
-              <option
-                className="text-xs md:text-sm lg:text-base"
-                value="Sameday"
+                <option value="">Pilih Opsi</option>
+                <option value="Jne">JNE</option>
+                <option value="Si Cepat">Si Cepat</option>
+                <option value="Ninja Express">Ninja Express</option>
+              </select>
+              <div className="p-2">
+                <p className="text-sm font-medium" id="tarif-pengiriman" />
+              </div>
+            </div>
+            <div className="mb-6 flex flex-col">
+              <label htmlFor="pembayaran">Pilih Pembayaran</label>
+              <select
+                name="pembayaran"
+                id="opsi-pembayaran"
+                className="w-full p-2 border rounded-md"
+                value={pembayaran}
+                onChange={(e) => setPembayaran(e.target.value)}
               >
-                Sameday
-              </option>
-            </select>
-          </div>
-
-          <div className="border p-3 lg:p-5 rounded-md mt-5">
-            <div className="flex w-full rounded-md justify-between mb-5">
+                <option value="">Pilih Opsi</option>
+                <option value="DANA">DANA</option>
+                <option value="OVO">OVO</option>
+                <option value="COD">COD</option>
+              </select>
+              <div className="p-2">
+                <p className="text-sm font-medium" id="tarif-pembayaran" />
+              </div>
+            </div>
+            <div>
               <input
-                className="border p-2 rounded-md w-full mr-1 text-xs md:text-sm lg:text-base"
-                type="text"
-                placeholder="Masukkan Kode Kupon"
+                type="submit"
+                value="konfirmasi"
+                className="w-full border rounded-md bg-red-700 text-white p-3 cursor-pointer"
               />
-              <button className="border p-2 lg:px-5 rounded-md font-semibold text-xs md:text-sm lg:text-base text-white bg-slate-900">
-                Pakai
-              </button>
             </div>
-
-            <p className="mb-2 font-bold text-sm md:text-lg lg:text-xl">
-              Ringkasan Belanja
-            </p>
-            <div className="flex justify-between mb-2">
-              <p className="text-xs md:text-sm lg:text-base">Total Harga</p>
-              <p className="text-xs md:text-sm lg:text-base">Rp. 0</p>
-            </div>
-            <div className="flex justify-between mb-2">
-              <p className="text-xs md:text-sm lg:text-base">
-                Total Ongkos Kirim
-              </p>
-              <p className="text-xs md:text-sm lg:text-base">Rp. 0</p>
-            </div>
-            <div className="flex justify-between mb-2">
-              <p className="text-xs md:text-sm lg:text-base">Total Diskon</p>
-              <p className="text-xs md:text-sm lg:text-base">- Rp. 0</p>
-            </div>
-            <hr></hr>
-            <strong>
-              <p className="text-xs md:text-sm lg:text-lg my-3 text-right">
-                Rp. 0
-              </p>
-            </strong>
-
-            <Link to={`/detailpesanan`}>
-              <button className="p-2 w-full rounded-md font-semibold text-sm md:text-lg lg:text-xl bg-red-600 text-white">
-                Pilih Pembayaran
-              </button>
-            </Link>
-          </div>
+          </form>
         </div>
       </div>
-    </div>
+      <div
+        className="w-full md:w-[35%] bg-zinc-50 p-5 border rounded-md"
+        style={{ height: "max-content" }}
+      >
+        <h1 className="font-semibold mb-5">Ringkasan Belanja</h1>
+        <div className="pb-5">
+          <h3 className="font-semibold mb-2">Total Belanja</h3>
+          <div className="flex justify-between mb-1">
+            <p>Total Harga</p>
+            <p>{formatCurrency(carts.totalPrice)}</p>
+          </div>
+          <div className="flex justify-between mb-1">
+            <p>Total Ongkos Kirim</p>
+            <span>Rp. 0</span>
+          </div>
+          <div className="flex justify-between mb-5">
+            <p>Total Diskon</p>
+            <span>Rp. 0</span>
+          </div>
+          <div className="flex justify-between border-y-2 py-4">
+            <p className="text-base font-semibold">Total Tagihan</p>
+            <p>{formatCurrency(carts.totalPrice)}</p>
+          </div>
+        </div>
+        <button
+          onClick={handleCreateOrder}
+          className="p-2 bg-red-700 text-white w-full rounded-md mb-3"
+        >
+          Bayar Pesanan
+        </button>
+        <button
+          onClick={handleCancleOrder}
+          className="p-2 bg-red-700 text-white w-full rounded-md"
+          id="buy-btn"
+        >
+          batal
+        </button>
+      </div>
+    </section>
   );
-};
-
-export default Checkout;
+}
