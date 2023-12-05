@@ -1,146 +1,139 @@
-import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { userRegist } from "../redux/reducer/user";
+import { toast } from "react-toastify";
+import Loading from "../components/Animation/Loading";
 
-const Register = () => {
-  const [values, setValues] = useState({
+export default function Register() {
+  const { isLoading, isSuccess } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
     address: "",
   });
-  const [passwordError, setPasswordError] = useState("");
-  const navigate = useNavigate();
+
+  const handleChange = (event) => {
+    setForm({ ...form, [event.target.name]: event.target.value });
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
-    if (values.password !== values.confirmPassword) {
-      setPasswordError("Password dan Confirm Password harus sama");
-      return;
-    }
-
-    setPasswordError("");
-    axios
-      .post("https://lazy-shorts-fish.cyclic.app/user/register", values)
-      .then((res) => {
-        navigate("/login");
-        console.log(res);
-      });
+    dispatch(userRegist(form));
   };
 
-  return (
-    <div className="w-full min-h-screen">
-      <div className="max-w-xl mx-auto px-10">
-        <div className="flex justify-center">
-          <img
-            className="mt-20 mb-10"
-            src="logo/kulineri-logo.png"
-            width="150"
-            height=""
-            alt="Logo"
-          />
-        </div>
-        <form className="form-register border rounded-xl p-10">
-          <h1 className="text-2xl font-bold mb-6 text-center">Daftar</h1>
+  // Navigate to login page after successful registration
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success("Registrasi Berhasil", {
+        position: "top-center",
+        autoClose: 500,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        closeButton: false,
+        draggable: true,
+        theme: "colored",
+      });
+      setTimeout(() => {
+        navigate("/login");
+      }, 1000);
+    }
+  }, [isSuccess]);
 
-          <div className="mb-3">
-            <label htmlFor="name" className="form-label">
+  return (
+    <div className="w-full max-w-7xl min-h-screen flex justify-center md:justify-center mx-auto px-6 md:px-0">
+      <div className="hidden md:block w-full p-8">
+        <div className="w-full h-full bg-red-700 rounded-md flex justify-center items-center">
+          <img src="/figure/promo.png" className="w-[70%]" alt="" />
+        </div>
+      </div>
+      <div className="w-full flex flex-col justify-center items-center">
+        <h1 className="text-4xl font-bold mb-3">Daftar Akun</h1>
+        <form
+          onSubmit={handleSubmit}
+          method="post"
+          className="my-8 w-full md:w-3/4"
+        >
+          <div className="mb-4 flex flex-col">
+            <label htmlFor="name" className="text-sm mb-2">
               Nama
             </label>
-          </div>
-          <div className="mb-3">
             <input
-              className="form-control border w-full rounded h-8"
-              type="name"
-              placeholder="Name"
-              onChange={(e) => setValues({ ...values, name: e.target.value })}
+              type="text"
+              name="name"
+              placeholder="Ahmad Sumbul"
+              className="w-full p-2 border rounded-md"
+              onChange={handleChange}
+              autoComplete="off"
+              required
             />
           </div>
-
-          <div className="mb-3">
-            <label htmlFor="email" className="form-label">
+          <div className="mb-4 flex flex-col">
+            <label htmlFor="email" className="text-sm mb-2">
               Email
             </label>
-          </div>
-          <div className="mb-3">
             <input
-              className="form-control border w-full rounded h-8"
               type="email"
-              placeholder="Email"
-              onChange={(e) => setValues({ ...values, email: e.target.value })}
+              name="email"
+              placeholder="sumbulgemink@gmail.com"
+              className="w-full p-2 border rounded-md"
+              onChange={handleChange}
+              autoComplete="off"
+              required
             />
           </div>
-          <div className="mb-3">
-            <label htmlFor="password" className="form-label">
+          <div className="mb-4 flex flex-col">
+            <label htmlFor="password" className="text-sm mb-2">
               Password
             </label>
-          </div>
-          <div className="mb-3">
-            <input
-              className="form-control border w-full rounded h-8"
-              type="password"
-              placeholder="Password"
-              onChange={(e) =>
-                setValues({ ...values, password: e.target.value })
-              }
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="confirmpassword" className="form-label">
-              Confirm Password
-            </label>
-          </div>
-          <div className="mb-5">
             <input
               type="password"
-              className="form-control border w-full rounded h-8"
-              id="confirmpassword"
-              placeholder=""
+              name="password"
+              placeholder="***"
+              className="w-full p-2 border rounded-md"
+              onChange={handleChange}
+              autoComplete="off"
               required
-              onChange={(e) =>
-                setValues({ ...values, confirmPassword: e.target.value })
-              }
             />
           </div>
-
-          {passwordError && (
-            <div className="text-red-500 mb-3">{passwordError}</div>
-          )}
-
-          <div className="mb-3">
-            <label htmlFor="addresses" className="form-label">
+          <div className="mb-4 flex flex-col">
+            <label htmlFor="password" className="text-sm mb-2">
               Alamat
             </label>
-          </div>
-          <div className="mb-5">
             <input
-              className="form-control border w-full rounded h-8"
-              type="addresses"
-              placeholder="Adresses"
-              onChange={(e) =>
-                setValues({ ...values, address: e.target.value })
-              }
+              type="text"
+              name="address"
+              placeholder="Bali"
+              className="w-full p-2 border rounded-md"
+              onChange={handleChange}
+              autoComplete="off"
+              required
             />
           </div>
-
           <button
-            className="bg-red-700 rounded py-3 my-5 text-white w-full text-lg font-semibold"
-            onClick={handleSubmit}
+            type="submit"
+            className="w-full p-2 bg-red-700 text-white rounded-md"
           >
-            Daftar
+            {isLoading ? <Loading /> : "daftar"}
           </button>
-
-          <p className="text-center">
-            Belum punya akun?
-            <Link to="/login" className="text-sky-500 hover:underline">
+        </form>
+        <div className="text-sm">
+          <span>
+            Sudah punya akun ?{" "}
+            <Link
+              to="/login"
+              rel="noopener noreferrer"
+              className="text-red-700"
+            >
               Login
             </Link>
-          </p>
-        </form>
+          </span>
+        </div>
       </div>
     </div>
   );
-};
-
-export default Register;
+}
